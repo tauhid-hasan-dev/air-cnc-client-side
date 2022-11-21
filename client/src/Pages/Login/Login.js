@@ -1,19 +1,42 @@
-import React, { useContext } from 'react'
+import React, { useContext, useState } from 'react'
 import toast from 'react-hot-toast';
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import PrimaryButton from '../../Components/Button/PrimaryButton'
 import { AuthContext } from '../../contexts/AuthProvider';
+import SmallSpinner from '../../Components/Spinner/SmallSpinner';
 
 const Login = () => {
+  const [userEmail, setUserEmail] = useState('')
   const {
     signin,
     signInWithGoogle,
     loading,
-    setLoading, } = useContext(AuthContext);
+    resetPassword,
+    setLoading } = useContext(AuthContext);
 
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from?.pathname || '/'
+
+  const handleReset = () => {
+    resetPassword(userEmail)
+      .then(() => {
+        toast.success('Please check your email to reset password')
+        setLoading(false)
+      })
+      .catch(err => {
+        toast.error(err.message);
+        setLoading(false)
+      })
+  }
+
+  const googleSignIn = () => {
+    signInWithGoogle()
+      .then((result) => {
+        console.log(result.user)
+        navigate(from, { replace: true });
+      })
+  }
 
   const handleSignIn = (event) => {
     event.preventDefault();
@@ -24,6 +47,10 @@ const Login = () => {
       .then(result => {
         toast.success('Login sucessfull!');
         navigate(from, { replace: true });
+      })
+      .catch(err => {
+        toast.error(err.message);
+        setLoading(false)
       })
 
   }
@@ -48,6 +75,7 @@ const Login = () => {
                 Email address
               </label>
               <input
+                onBlur={(event) => setUserEmail(event.target.value)}
                 type='email'
                 name='email'
                 id='email'
@@ -79,12 +107,12 @@ const Login = () => {
               type='submit'
               classes='w-full px-8 py-3 font-semibold rounded-md bg-gray-900 hover:bg-gray-700 hover:text-white text-gray-100'
             >
-              Sign in
+              {loading ? <SmallSpinner /> : 'Sign In'}
             </PrimaryButton>
           </div>
         </form>
         <div className='space-y-1'>
-          <button className='text-xs hover:underline text-gray-400'>
+          <button onClick={handleReset} className='text-xs hover:underline text-gray-400'>
             Forgot password?
           </button>
         </div>
@@ -96,7 +124,7 @@ const Login = () => {
           <div className='flex-1 h-px sm:w-16 dark:bg-gray-700'></div>
         </div>
         <div className='flex justify-center space-x-4'>
-          <button aria-label='Log in with Google' className='p-3 rounded-sm'>
+          <button onClick={googleSignIn} aria-label='Log in with Google' className='p-3 rounded-sm'>
             <svg
               xmlns='http://www.w3.org/2000/svg'
               viewBox='0 0 32 32'

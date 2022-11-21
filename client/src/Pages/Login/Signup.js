@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
 import toast from 'react-hot-toast'
-import { Link } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import PrimaryButton from '../../Components/Button/PrimaryButton'
 import { AuthContext } from '../../contexts/AuthProvider'
 
@@ -13,11 +13,16 @@ const Signup = () => {
     loading,
     setLoading, } = useContext(AuthContext);
 
+  const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from?.pathname || '/'
+
 
   const googleSignIn = () => {
     signInWithGoogle()
       .then((result) => {
         console.log(result.user)
+        navigate(from, { replace: true });
       })
   }
 
@@ -62,6 +67,7 @@ const Signup = () => {
           verifyEmail()
             .then(() => {
               toast.success('Please check your email for verification')
+              navigate(from, { replace: true });
             })
             .catch(err => console.log(err.message))
         })
