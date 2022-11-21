@@ -4,6 +4,7 @@ const Home = () => {
   return (
     <>
       <Spinner />
+      <p>this is this mamin</p>
     </>
   )
 }
