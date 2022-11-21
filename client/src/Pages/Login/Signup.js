@@ -1,5 +1,5 @@
 import React, { useContext } from 'react'
-
+import toast from 'react-hot-toast'
 import { Link } from 'react-router-dom'
 import PrimaryButton from '../../Components/Button/PrimaryButton'
 import { AuthContext } from '../../contexts/AuthProvider'
@@ -20,6 +20,50 @@ const Signup = () => {
     const email = event.target.email.value;
     const password = event.target.password.value;
     console.log(name, image, email, password);
+
+
+    const formdata = new FormData();
+    formdata.append('image', image)
+
+    const url = `https://api.imgbb.com/1/upload?key=1357b7af2e2bd0d85c5b8b326f53f9cd`
+
+    //we are sending this image to the image bb data base
+    fetch(url, {
+      method: 'POST',
+      body: formdata
+    })
+      .then(res => res.json())
+      .then(data => {
+        //we are getting image url from the imagebb server
+        const photo = data.data.display_url
+        //we are creating user after we getting image url from the imagebb 
+        createUser(email, password)
+          .then(result => {
+            const user = result.user;
+            updateUser(name, photo)
+          })
+      })
+      .catch(err => console.log(err.message))
+
+    const updateUser = (name, photo) => {
+      updateUserProfile(name, photo)
+        .then(result => {
+          const user = result.user;
+          verifyUserEmail();
+        })
+        .catch(err => console.log(err.message))
+    }
+
+    const verifyUserEmail = () => {
+      verifyEmail()
+        .then(() => {
+          toast.success('Please check your email for verification')
+        })
+        .catch(err => console.log(err.message))
+    }
+
+
+
 
 
 
