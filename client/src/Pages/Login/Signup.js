@@ -9,6 +9,7 @@ const Signup = () => {
     createUser,
     updateUserProfile,
     verifyEmail,
+    signInWithGoogle,
     loading,
     setLoading, } = useContext(AuthContext);
 
@@ -47,20 +48,17 @@ const Signup = () => {
 
     const updateUser = (name, photo) => {
       updateUserProfile(name, photo)
-        .then(result => {
-          const user = result.user;
-          verifyUserEmail();
+        .then(() => {
+          verifyEmail()
+            .then(() => {
+              toast.success('Please check your email for verification')
+            })
+            .catch(err => console.log(err.message))
         })
         .catch(err => console.log(err.message))
     }
 
-    const verifyUserEmail = () => {
-      verifyEmail()
-        .then(() => {
-          toast.success('Please check your email for verification')
-        })
-        .catch(err => console.log(err.message))
-    }
+
 
 
 
