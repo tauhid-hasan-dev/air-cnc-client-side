@@ -14,7 +14,15 @@ const Signup = () => {
     setLoading, } = useContext(AuthContext);
 
 
-  const handleSubmit = event => {
+  const googleSignIn = () => {
+    signInWithGoogle()
+      .then((result) => {
+        console.log(result.user)
+      })
+  }
+
+
+  const handleSignUp = event => {
     event.preventDefault();
     const name = event.target.name.value;
     const image = event.target.image.files[0];
@@ -41,8 +49,10 @@ const Signup = () => {
         createUser(email, password)
           .then(result => {
             const user = result.user;
+            console.log(user);
             updateUser(name, photo)
           })
+          .catch(err => console.log(err.message))
       })
       .catch(err => console.log(err.message))
 
@@ -58,13 +68,6 @@ const Signup = () => {
         .catch(err => console.log(err.message))
     }
 
-
-
-
-
-
-
-
   }
 
   return (
@@ -75,7 +78,7 @@ const Signup = () => {
           <p className='text-sm text-gray-400'>Create a new account</p>
         </div>
         <form
-          onSubmit={handleSubmit}
+          onSubmit={handleSignUp}
           noValidate=''
           action=''
           className='space-y-12 ng-untouched ng-pristine ng-valid'
@@ -156,7 +159,7 @@ const Signup = () => {
           <div className='flex-1 h-px sm:w-16 dark:bg-gray-700'></div>
         </div>
         <div className='flex justify-center space-x-4'>
-          <button aria-label='Log in with Google' className='p-3 rounded-sm'>
+          <button onClick={googleSignIn} aria-label='Log in with Google' className='p-3 rounded-sm'>
             <svg
               xmlns='http://www.w3.org/2000/svg'
               viewBox='0 0 32 32'
@@ -194,6 +197,10 @@ const Signup = () => {
       </div>
     </div>
   )
+}
+
+const googleSignIn = () => {
+
 }
 
 export default Signup
